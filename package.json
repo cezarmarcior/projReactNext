@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:3001": "next dev --turbopack -p 3001",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -10,6 +11,7 @@
   },
   "dependencies": {
     "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
     "next": "15.4.7",
     "react": "19.1.0",
     "react-dom": "19.1.0"
