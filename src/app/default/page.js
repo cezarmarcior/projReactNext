@@ -5,9 +5,22 @@ import Cookies from 'js-cookie';
 import Principal from '../components/principal';
 import Parametro from '../components/parametro'
 import { Texto1, Texto2, Texto3 } from '../components/parametro'
+import { useEffect } from 'react';
 
 export default function Default() {
     const router = useRouter();
+
+    useEffect(()=> {
+        try {
+            const token = Cookies.get('authToken');
+            if(!token) {
+                router.push('/login');
+                return;
+            }
+        } catch (error) {
+            
+        }
+    },[router]);
 
     const handleLogout = () =>{
         Cookies.remove('authToken');

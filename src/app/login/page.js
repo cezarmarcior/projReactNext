@@ -6,21 +6,48 @@ import Cookies from 'js-cookie'; // Codigo para instalar a biblioteca:   npm i j
 
 export default function Login() {
   const router = useRouter();
-  const token = "{'login':'marcio.cezar'}";
+  const [loginData, setLoginData] = useState({
+    loginuser: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
 
-  const hadleSubmit = async (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
-      Cookies.set('authToken', token, {
-        expires: 7,
-        secure: true,
-        sameSite: 'strict'
+      var url = '/api/login';
+      console.log('loginData: ', loginData)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(loginData)
       });
+      if(!response.ok)
+        throw new Error('Login falou');
 
-      console.log(token);
-      router.push('/default');
+      const { token } = await response.json();
+
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expirationDate = new Date(payload.exp * 1000);
+      
+      Cookies.set('authToken', token, {
+        expires: expirationDate,
+        secure: true,
+        sameSite: 'Strict'
+      })
+      
+      router.push('/default');      
     } catch (error) {
-      console.log(error);
+      setError('Erro ao fazer o login. Verificar syas credenciais.');    
     }
   };
 
@@ -32,7 +59,7 @@ export default function Login() {
             Login
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={hadleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="loginuser" className="sr-only">Usuário</label>
@@ -45,6 +72,7 @@ export default function Login() {
                 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
                 focus:z-10 sm:text-sm"
                 placeholder="Usuário"
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -57,9 +85,16 @@ export default function Login() {
                 className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 
                   text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Senha"
+                onChange={handleChange}
               />
             </div>
           </div>
+
+          {error && (
+            <div className="text-red-500 text-sm text-center">
+              {error}
+            </div>
+          )}
 
           <div>
             <button
@@ -75,4 +110,4 @@ export default function Login() {
       </div>
     </div>
   );
-}
+};

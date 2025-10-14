@@ -6,19 +6,19 @@ const mockUsers = [
     {
         id: 1,
         username: "Marcio Cezar",
-        login: "marcio.cezar",
+        loginuser: "marcio.cezar",
         password: "secret@123"
     },
     {
         id: 2,
         username: "Rogerio Cezar",
-        login: "rogerio.cezar",
+        loginuser: "rogerio.cezar",
         password: "secret@123"
     },
     {
         id: 3,
         username: "Rogerio Cezar",
-        login: "marcio1.cezar",
+        loginuser: "marcio1.cezar",
         password: "secret@123"
     }
 ];
@@ -27,9 +27,9 @@ export async function POST(request) {
     try {
         //Bloco 1
         const body = await request.json();
-        const { login, password } = body;
+        const { loginuser, password } = body;
 
-        const user = await mockUsers.find(u => u.login === login);
+        const user = await mockUsers.find(u => u.loginuser === loginuser);
         if( !user || user.password !== password){
             return NextResponse.json(
                 { error: 'Usuário ou senha inválidos'},
@@ -41,7 +41,7 @@ export async function POST(request) {
             {
                 id: user.id,
                 username: user.username,
-                login : user.login
+                loginuser : user.loginuser
             },
             JWT_SECRET,
             { expiresIn: '1h'}
